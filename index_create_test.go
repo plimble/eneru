@@ -25,12 +25,7 @@ func (t *CreateIndexSuite) SetupSuite() {
 		})
 	}))
 
-	client, err := NewClient(t.server.URL)
-	if err != nil {
-		panic(err)
-	}
-
-	t.client = client
+	t.client, _ = NewClient(t.server.URL)
 }
 
 func (t *CreateIndexSuite) TearDownSuite() {
