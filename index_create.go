@@ -8,7 +8,7 @@ import (
 
 type CreateIndexReq struct {
 	client *Client
-	query  *url.Values
+	Query  *url.Values
 	body   io.Reader
 	index  string
 }
@@ -16,7 +16,7 @@ type CreateIndexReq struct {
 func NewCreateIndex(client *Client, index string) *CreateIndexReq {
 	return &CreateIndexReq{
 		client: client,
-		query:  &url.Values{},
+		Query:  &url.Values{},
 		index:  index,
 	}
 }
@@ -29,14 +29,14 @@ func (c *CreateIndexReq) Body(body io.Reader) *CreateIndexReq {
 
 func (c *CreateIndexReq) Pretty(pretty bool) *CreateIndexReq {
 	if pretty {
-		c.query.Set("pretty", "true")
+		c.Query.Set("pretty", "true")
 	}
 
 	return c
 }
 
 func (c *CreateIndexReq) Do() (*CreateIndexResp, error) {
-	resp, err := c.client.request(PUT, c.index, c.query, c.body)
+	resp, err := c.client.request(PUT, c.index, c.Query, c.body)
 	if err != nil {
 		return nil, err
 	}
