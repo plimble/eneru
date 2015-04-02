@@ -46,6 +46,10 @@ func (c *Client) ExistIndex(index string) *ExistIndexReq {
 	return NewExistIndex(c, index)
 }
 
+func (c *Client) Count() *CountReq {
+	return NewCount(c)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
@@ -80,7 +84,7 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 		c.dumpResponse(resp)
 	}
 
-	if err := checkResponse(resp); err != nil {
+	if err := c.checkResponse(resp); err != nil {
 		return nil, err
 	}
 
@@ -130,4 +134,12 @@ func (c *Client) dumpResponse(resp *http.Response) {
 	if err == nil {
 		log.Printf("%s\n\n", string(out))
 	}
+}
+
+func (c *Client) checkResponse(resp *http.Response) error {
+	if resp.StatusCode == 200 {
+		return nil
+	}
+
+	return newErrResp(resp.Body)
 }
