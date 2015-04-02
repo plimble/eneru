@@ -23,14 +23,6 @@ func addTailingSlash(url string) string {
 	return url
 }
 
-func checkResponse(resp *http.Response) error {
-	if resp.StatusCode == 200 {
-		return nil
-	}
-
-	return newErrResp(resp.Body)
-}
-
 func decodeResp(resp *http.Response, v interface{}) error {
 	defer resp.Body.Close()
 	return json.NewDecoder(resp.Body).Decode(v)
@@ -38,4 +30,17 @@ func decodeResp(resp *http.Response, v interface{}) error {
 
 func encodeResp(w http.ResponseWriter, v interface{}) {
 	json.NewEncoder(w).Encode(v)
+}
+
+func buildPathIndex(index, ty, action string) string {
+	switch {
+	case index == "" && ty == "" && action != "":
+		return action
+	case index != "" && ty == "" && action != "":
+		return string2.Concat(index, "/", action)
+	case index != "" && ty != "" && action == "":
+		return string2.Concat(index, "/", ty)
+	}
+
+	return string2.Concat(index, "/", ty, "/", action)
 }
