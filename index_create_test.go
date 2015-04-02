@@ -11,8 +11,7 @@ import (
 type CreateIndexSuite struct {
 	suite.Suite
 	server *httptest.Server
-	client Client
-	ci     *CreateIndexReq
+	client *Client
 }
 
 func TestCreateIndexSuite(t *testing.T) {
@@ -39,7 +38,7 @@ func (t *CreateIndexSuite) TearDownSuite() {
 }
 
 func (t *CreateIndexSuite) TestBody() {
-	req := NewCreateIndexReq("test")
+	req := t.client.CreateIndex("test")
 	req.Body(bytes.NewBuffer(nil))
 	t.NotNil(req.body)
 }
@@ -61,8 +60,7 @@ func (t *CreateIndexSuite) TestDo() {
 		})
 	})
 
-	req := NewCreateIndexReq("test").Body(j)
-	resp, err := t.client.CreateIndex(req)
+	resp, err := t.client.CreateIndex("test").Body(j).Do()
 	t.NoError(err)
 	t.True(resp.Acknowledged, true)
 }
