@@ -111,7 +111,7 @@ func (c *Client) doPretty(query *Query, body *bytes.Buffer) {
 			data := make([]byte, body.Len())
 			copy(data, body.Bytes())
 			body.Truncate(0)
-			json.Indent(body, data, "", "\t")
+			json.Indent(body, data, "", "    ")
 		}
 	}
 }
