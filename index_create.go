@@ -17,14 +17,14 @@ func NewCreateIndex(client *Client, index string) *CreateIndexReq {
 	}
 }
 
-func (c *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
-	c.body = body
+func (req *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
+	req.body = body
 
-	return c
+	return req
 }
 
-func (c *CreateIndexReq) Do() (*CreateIndexResp, error) {
-	resp, err := c.client.Request(PUT, c.path, nil, c.body)
+func (req *CreateIndexReq) Do() (*CreateIndexResp, error) {
+	resp, err := req.client.Request(PUT, req.path, nil, req.body)
 	if err != nil {
 		return nil, err
 	}

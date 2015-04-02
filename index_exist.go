@@ -4,18 +4,18 @@ import ()
 
 type ExistIndexReq struct {
 	client *Client
-	index  string
+	path   string
 }
 
 func NewExistIndex(client *Client, index string) *ExistIndexReq {
 	return &ExistIndexReq{
 		client: client,
-		index:  index,
+		path:   index,
 	}
 }
 
-func (c *ExistIndexReq) Do() (bool, error) {
-	resp, err := c.client.Request(HEAD, c.index, nil, nil)
+func (req *ExistIndexReq) Do() (bool, error) {
+	resp, err := req.client.Request(HEAD, req.path, nil, nil)
 	if err != nil {
 		return false, err
 	}
