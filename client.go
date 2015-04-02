@@ -3,7 +3,6 @@ package eneru
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -19,10 +18,6 @@ const (
 	HEAD   = "HEAD"
 )
 
-var (
-	ErrUnableConnect = errors.New("unable to connect elastic search")
-)
-
 type Client struct {
 	url        string
 	debug      bool
@@ -32,7 +27,7 @@ type Client struct {
 
 func NewClient(url string) (*Client, error) {
 	c := &Client{
-		url:        url,
+		url:        addTailingSlash(url),
 		httpClient: http.DefaultClient,
 	}
 
@@ -60,7 +55,7 @@ func (c *Client) Pretty(pretty bool) {
 }
 
 func (c *Client) ping() error {
-	resp, err := c.Request(HEAD, "/", NewQuery(), bytes.NewBuffer(nil))
+	resp, err := c.Request(HEAD, "/", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -95,9 +90,9 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 func (c *Client) buildRequest(method, path string, query *Query, body *bytes.Buffer) *http.Request {
 	var r *http.Request
 	if body == nil {
-		r, _ = http.NewRequest(method, buildUrl(c.url, path, query.String()), nil)
+		r, _ = http.NewRequest(method, buildUrl(c.url, path, query), nil)
 	} else {
-		r, _ = http.NewRequest(method, buildUrl(c.url, path, query.String()), body)
+		r, _ = http.NewRequest(method, buildUrl(c.url, path, query), body)
 	}
 
 	r.Header.Set("Content-Type", "application/json")
@@ -107,7 +102,11 @@ func (c *Client) buildRequest(method, path string, query *Query, body *bytes.Buf
 
 func (c *Client) doPretty(query *Query, body *bytes.Buffer) {
 	if c.pretty {
+		if query == nil {
+			query = NewQuery()
+		}
 		query.Add("pretty", "true")
+
 		if body != nil {
 			data := make([]byte, body.Len())
 			copy(data, body.Bytes())

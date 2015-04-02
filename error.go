@@ -2,7 +2,12 @@ package eneru
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
+)
+
+var (
+	ErrUnableConnect = errors.New("unable to connect elastic search")
 )
 
 type ErrorResp struct {

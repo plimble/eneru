@@ -4,10 +4,23 @@ import (
 	"encoding/json"
 	"github.com/plimble/utils/strings2"
 	"net/http"
+	"strings"
 )
 
-func buildUrl(url, path, query string) string {
-	return string2.ConcatBase(url, "/", path, query)
+func buildUrl(url, path string, query *Query) string {
+	if query == nil {
+		return string2.ConcatBase(url, path)
+	}
+
+	return string2.ConcatBase(url, path, query.String())
+}
+
+func addTailingSlash(url string) string {
+	if !strings.HasSuffix(url, "/") {
+		return string2.ConcatBase(url, "/")
+	}
+
+	return url
 }
 
 func checkResponse(resp *http.Response) error {

@@ -15,7 +15,7 @@ func NewExistIndex(client *Client, index string) *ExistIndexReq {
 }
 
 func (c *ExistIndexReq) Do() (bool, error) {
-	resp, err := c.client.Request(HEAD, c.index, NewQuery(), nil)
+	resp, err := c.client.Request(HEAD, c.index, nil, nil)
 	if err != nil {
 		return false, err
 	}

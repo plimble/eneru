@@ -6,7 +6,6 @@ import (
 
 type CreateIndexReq struct {
 	client *Client
-	Query  *Query
 	body   *bytes.Buffer
 	path   string
 }
@@ -14,7 +13,6 @@ type CreateIndexReq struct {
 func NewCreateIndex(client *Client, index string) *CreateIndexReq {
 	return &CreateIndexReq{
 		client: client,
-		Query:  NewQuery(),
 		path:   index,
 	}
 }
@@ -26,7 +24,7 @@ func (c *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
 }
 
 func (c *CreateIndexReq) Do() (*CreateIndexResp, error) {
-	resp, err := c.client.Request(PUT, c.path, c.Query, c.body)
+	resp, err := c.client.Request(PUT, c.path, nil, c.body)
 	if err != nil {
 		return nil, err
 	}
