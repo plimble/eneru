@@ -1,32 +1,70 @@
 package eneru
 
 import (
-	"fmt"
+	"bytes"
+	"github.com/stretchr/testify/suite"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-func TestCreateIndex(t *testing.T) {
-	client := NewClient("http://172.17.8.101:9200")
-	client.Debug(true)
-	jack := NewCreateIndex(client, "jack")
-	jack.Pretty(true)
+type CreateIndexSuite struct {
+	suite.Suite
+	server *httptest.Server
+	client *Client
+	ci     *CreateIndexReq
+}
 
-	j := NewJson()
-	j.O("mappings", func(j *Json) {
-		j.O("book", func(j *Json) {
-			j.O("properties", func(j *Json) {
-				j.O("name", func(j *Json) {
-					j.S("type", "string")
-				})
-				j.O("email", func(j *Json) {
-					j.S("type", "string")
-					j.S("index", "not_analyzed")
+func TestCreateIndexSuite(t *testing.T) {
+	suite.Run(t, &CreateIndexSuite{})
+}
+
+func (t *CreateIndexSuite) SetupSuite() {
+	t.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		encodeResp(w, &CreateIndexResp{
+			Acknowledged: true,
+		})
+	}))
+
+	client, err := NewClient(t.server.URL)
+	if err != nil {
+		panic(err)
+	}
+
+	t.client = client
+}
+
+func (t *CreateIndexSuite) TearDownSuite() {
+	t.server.Close()
+}
+
+func (t *CreateIndexSuite) SetupTest() {
+	t.ci = t.client.CreateIndex("test")
+}
+
+func (t *CreateIndexSuite) TestBody() {
+	t.ci.Body(bytes.NewBuffer(nil))
+	t.NotNil(t.ci.body)
+}
+
+func (t *CreateIndexSuite) TestDo() {
+	j := NewJson(func(j *Json) {
+		j.O("mappings", func(j *Json) {
+			j.O("book", func(j *Json) {
+				j.O("properties", func(j *Json) {
+					j.O("name", func(j *Json) {
+						j.S("type", "string")
+					})
+					j.O("email", func(j *Json) {
+						j.S("type", "string")
+						j.S("index", "not_analyzed")
+					})
 				})
 			})
 		})
 	})
 
-	jack.Body(j.Buffer())
-	resp, err := jack.Do()
-	fmt.Println(resp, err)
+	resp, err := t.ci.Body(j).Do()
+	t.NoError(err)
+	t.True(resp.Acknowledged, true)
 }

@@ -1,12 +1,16 @@
 package eneru
 
 import (
-	"io"
+	"bytes"
+	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 )
+
+//go:generate mockery --name ClientInterface
+//go:generate mockery --name ClientInterface -inpkg
 
 const (
 	GET    = "GET"
@@ -16,37 +20,97 @@ const (
 	HEAD   = "HEAD"
 )
 
-type Client struct {
-	url   string
-	debug bool
+var (
+	ErrUnableConnect = errors.New("unable to connect elastic search")
+)
+
+type ClientInterface interface {
+	CreateIndex(index string) *CreateIndexReq
+	Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error)
 }
 
-func NewClient(url string) *Client {
-	return &Client{
-		url: url,
+type Client struct {
+	url        string
+	debug      bool
+	pretty     bool
+	httpClient *http.Client
+}
+
+func NewClient(url string) (*Client, error) {
+	client := &Client{
+		url:        url,
+		httpClient: http.DefaultClient,
 	}
+
+	if err := client.ping(); err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func (c *Client) CreateIndex(index string) *CreateIndexReq {
+	return NewCreateIndex(c, index)
 }
 
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
 
-func (c *Client) request(method, path string, query *url.Values, body io.Reader) (*http.Response, error) {
-	r, _ := http.NewRequest(method, buildUrl(c.url, path, query), body)
+func (c *Client) Pretty(pretty bool) {
+	c.pretty = pretty
+}
 
-	r.Header.Set("Content-Type", "application/json")
+func (c *Client) ping() error {
+	resp, err := c.Request(HEAD, "/", NewQuery(), bytes.NewBuffer(nil))
+	if err != nil {
+		return err
+	}
 
+	if resp.StatusCode != 200 {
+		return ErrUnableConnect
+	}
+
+	return nil
+}
+
+func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error) {
+	c.doPretty(query, body)
+
+	r := c.buildRequest(method, path, query, body)
 	if c.debug {
 		c.dumpRequest(r)
 	}
 
-	resp, err := http.DefaultClient.Do(r)
-
+	resp, err := c.httpClient.Do(r)
 	if c.debug {
 		c.dumpResponse(resp)
 	}
 
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
 	return resp, err
+}
+
+func (c *Client) buildRequest(method, path string, query *Query, body *bytes.Buffer) *http.Request {
+	r, _ := http.NewRequest(method, buildUrl(c.url, path, query.String()), body)
+	r.Header.Set("Content-Type", "application/json")
+
+	return r
+}
+
+func (c *Client) doPretty(query *Query, body *bytes.Buffer) {
+	if c.pretty {
+		query.Add("pretty", "true")
+		if body != nil {
+			data := make([]byte, body.Len())
+			copy(data, body.Bytes())
+			body.Truncate(0)
+			json.Indent(body, data, "", "\t")
+		}
+	}
 }
 
 // dumpRequest dumps the given HTTP request.
