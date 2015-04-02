@@ -11,7 +11,7 @@ import (
 type CreateIndexSuite struct {
 	suite.Suite
 	server *httptest.Server
-	client *Client
+	client Client
 	ci     *CreateIndexReq
 }
 

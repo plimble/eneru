@@ -9,7 +9,7 @@ import (
 	"net/http/httputil"
 )
 
-//go:generate mockery --name ClientInterface
+//go:generate mockery --name Client
 
 const (
 	GET    = "GET"
@@ -23,44 +23,44 @@ var (
 	ErrUnableConnect = errors.New("unable to connect elastic search")
 )
 
-type ClientInterface interface {
+type Client interface {
 	CreateIndex(req *CreateIndexReq) (*CreateIndexResp, error)
 	Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error)
 }
 
-type Client struct {
+type client struct {
 	url        string
 	debug      bool
 	pretty     bool
 	httpClient *http.Client
 }
 
-func NewClient(url string) (*Client, error) {
-	client := &Client{
+func NewClient(url string) (Client, error) {
+	c := &client{
 		url:        url,
 		httpClient: http.DefaultClient,
 	}
 
-	if err := client.ping(); err != nil {
+	if err := c.ping(); err != nil {
 		return nil, err
 	}
 
-	return client, nil
+	return c, nil
 }
 
-func (c *Client) CreateIndex(req *CreateIndexReq) (*CreateIndexResp, error) {
+func (c *client) CreateIndex(req *CreateIndexReq) (*CreateIndexResp, error) {
 	return req.do(c)
 }
 
-func (c *Client) Debug(debug bool) {
+func (c *client) Debug(debug bool) {
 	c.debug = debug
 }
 
-func (c *Client) Pretty(pretty bool) {
+func (c *client) Pretty(pretty bool) {
 	c.pretty = pretty
 }
 
-func (c *Client) ping() error {
+func (c *client) ping() error {
 	resp, err := c.Request(HEAD, "/", NewQuery(), bytes.NewBuffer(nil))
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (c *Client) ping() error {
 	return nil
 }
 
-func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error) {
+func (c *client) Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error) {
 	c.doPretty(query, body)
 
 	r := c.buildRequest(method, path, query, body)
@@ -93,14 +93,14 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 	return resp, err
 }
 
-func (c *Client) buildRequest(method, path string, query *Query, body *bytes.Buffer) *http.Request {
+func (c *client) buildRequest(method, path string, query *Query, body *bytes.Buffer) *http.Request {
 	r, _ := http.NewRequest(method, buildUrl(c.url, path, query.String()), body)
 	r.Header.Set("Content-Type", "application/json")
 
 	return r
 }
 
-func (c *Client) doPretty(query *Query, body *bytes.Buffer) {
+func (c *client) doPretty(query *Query, body *bytes.Buffer) {
 	if c.pretty {
 		query.Add("pretty", "true")
 		if body != nil {
@@ -113,7 +113,7 @@ func (c *Client) doPretty(query *Query, body *bytes.Buffer) {
 }
 
 // dumpRequest dumps the given HTTP request.
-func (c *Client) dumpRequest(r *http.Request) {
+func (c *client) dumpRequest(r *http.Request) {
 	out, err := httputil.DumpRequestOut(r, true)
 	if err == nil {
 		log.Printf("%s\n\n", string(out))
@@ -121,7 +121,7 @@ func (c *Client) dumpRequest(r *http.Request) {
 }
 
 // dumpResponse dumps the given HTTP response.
-func (c *Client) dumpResponse(resp *http.Response) {
+func (c *client) dumpResponse(resp *http.Response) {
 	out, err := httputil.DumpResponse(resp, true)
 	if err == nil {
 		log.Printf("%s\n\n", string(out))

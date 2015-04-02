@@ -23,7 +23,7 @@ func (c *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
 	return c
 }
 
-func (c *CreateIndexReq) do(client ClientInterface) (*CreateIndexResp, error) {
+func (c *CreateIndexReq) do(client Client) (*CreateIndexResp, error) {
 	resp, err := client.Request(PUT, c.path, c.Query, c.body)
 	if err != nil {
 		return nil, err

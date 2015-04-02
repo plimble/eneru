@@ -7,15 +7,15 @@ import "bytes"
 
 import "net/http"
 
-type MockClientInterface struct {
+type MockClient struct {
 	mock.Mock
 }
 
-func NewMockClientInterface() *MockClientInterface {
-	return &MockClientInterface{}
+func NewMockClient() *MockClient {
+	return &MockClient{}
 }
 
-func (m *MockClientInterface) CreateIndex(req *eneru.CreateIndexReq) (*eneru.CreateIndexResp, error) {
+func (m *MockClient) CreateIndex(req *eneru.CreateIndexReq) (*eneru.CreateIndexResp, error) {
 	ret := m.Called(req)
 
 	var r0 *eneru.CreateIndexResp
@@ -26,7 +26,7 @@ func (m *MockClientInterface) CreateIndex(req *eneru.CreateIndexReq) (*eneru.Cre
 
 	return r0, r1
 }
-func (m *MockClientInterface) Request(method string, path string, query *eneru.Query, body *bytes.Buffer) (*http.Response, error) {
+func (m *MockClient) Request(method string, path string, query *eneru.Query, body *bytes.Buffer) (*http.Response, error) {
 	ret := m.Called(method, path, query, body)
 
 	var r0 *http.Response
