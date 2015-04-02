@@ -5,17 +5,15 @@ import (
 )
 
 type CreateIndexReq struct {
-	client ClientInterface
-	Query  *Query
-	body   *bytes.Buffer
-	path   string
+	Query *Query
+	body  *bytes.Buffer
+	path  string
 }
 
-func NewCreateIndex(c ClientInterface, index string) *CreateIndexReq {
+func NewCreateIndexReq(index string) *CreateIndexReq {
 	return &CreateIndexReq{
-		client: c,
-		Query:  NewQuery(),
-		path:   index,
+		Query: NewQuery(),
+		path:  index,
 	}
 }
 
@@ -25,8 +23,8 @@ func (c *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
 	return c
 }
 
-func (c *CreateIndexReq) Do() (*CreateIndexResp, error) {
-	resp, err := c.client.Request(PUT, c.path, c.Query, c.body)
+func (c *CreateIndexReq) do(client ClientInterface) (*CreateIndexResp, error) {
+	resp, err := client.Request(PUT, c.path, c.Query, c.body)
 	if err != nil {
 		return nil, err
 	}

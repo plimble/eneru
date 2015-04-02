@@ -10,7 +10,6 @@ import (
 )
 
 //go:generate mockery --name ClientInterface
-//go:generate mockery --name ClientInterface -inpkg
 
 const (
 	GET    = "GET"
@@ -25,7 +24,7 @@ var (
 )
 
 type ClientInterface interface {
-	CreateIndex(index string) *CreateIndexReq
+	CreateIndex(req *CreateIndexReq) (*CreateIndexResp, error)
 	Request(method, path string, query *Query, body *bytes.Buffer) (*http.Response, error)
 }
 
@@ -49,8 +48,8 @@ func NewClient(url string) (*Client, error) {
 	return client, nil
 }
 
-func (c *Client) CreateIndex(index string) *CreateIndexReq {
-	return NewCreateIndex(c, index)
+func (c *Client) CreateIndex(req *CreateIndexReq) (*CreateIndexResp, error) {
+	return req.do(c)
 }
 
 func (c *Client) Debug(debug bool) {

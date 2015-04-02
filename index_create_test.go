@@ -38,13 +38,10 @@ func (t *CreateIndexSuite) TearDownSuite() {
 	t.server.Close()
 }
 
-func (t *CreateIndexSuite) SetupTest() {
-	t.ci = t.client.CreateIndex("test")
-}
-
 func (t *CreateIndexSuite) TestBody() {
-	t.ci.Body(bytes.NewBuffer(nil))
-	t.NotNil(t.ci.body)
+	req := NewCreateIndexReq("test")
+	req.Body(bytes.NewBuffer(nil))
+	t.NotNil(req.body)
 }
 
 func (t *CreateIndexSuite) TestDo() {
@@ -64,7 +61,8 @@ func (t *CreateIndexSuite) TestDo() {
 		})
 	})
 
-	resp, err := t.ci.Body(j).Do()
+	req := NewCreateIndexReq("test").Body(j)
+	resp, err := t.client.CreateIndex(req)
 	t.NoError(err)
 	t.True(resp.Acknowledged, true)
 }
