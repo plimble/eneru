@@ -47,6 +47,10 @@ func (c *Client) CreateIndex(index string) *CreateIndexReq {
 	return NewCreateIndex(c, index)
 }
 
+func (c *Client) ExistIndex(index string) *ExistIndexReq {
+	return NewExistIndex(c, index)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
@@ -89,7 +93,13 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 }
 
 func (c *Client) buildRequest(method, path string, query *Query, body *bytes.Buffer) *http.Request {
-	r, _ := http.NewRequest(method, buildUrl(c.url, path, query.String()), body)
+	var r *http.Request
+	if body == nil {
+		r, _ = http.NewRequest(method, buildUrl(c.url, path, query.String()), nil)
+	} else {
+		r, _ = http.NewRequest(method, buildUrl(c.url, path, query.String()), body)
+	}
+
 	r.Header.Set("Content-Type", "application/json")
 
 	return r
