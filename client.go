@@ -46,6 +46,10 @@ func (c *Client) ExistIndex(index string) *ExistIndexReq {
 	return NewExistIndex(c, index)
 }
 
+func (c *Client) DeleteIndex(index string) *DeleteIndexReq {
+	return NewDeleteIndex(c, index)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
