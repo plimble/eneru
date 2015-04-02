@@ -25,7 +25,7 @@ func (req *CountReq) Type(ty string) *CountReq {
 }
 
 func (req *CountReq) Do() (int, error) {
-	resp, err := req.client.Request(GET, buildPathIndex(req.index, req.ty, "_count"), nil, nil)
+	resp, err := req.client.Request(GET, buildPathIndexTypeAction(req.index, req.ty, "_count"), nil, nil)
 	if err != nil {
 		return 0, err
 	}
