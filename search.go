@@ -9,14 +9,14 @@ type SearchReq struct {
 	client *Client
 	index  string
 	ty     string
-	query  *Query
+	Query  *Query
 	body   *bytes.Buffer
 }
 
 func NewSearch(client *Client) *SearchReq {
 	return &SearchReq{
 		client: client,
-		query:  NewQuery(),
+		Query:  NewQuery(),
 	}
 }
 
@@ -33,13 +33,13 @@ func (req *SearchReq) Type(ty string) *SearchReq {
 }
 
 func (req *SearchReq) Source(s string) *SearchReq {
-	req.query.Add("_source", s)
+	req.Query.Add("_source", s)
 
 	return req
 }
 
 func (req *SearchReq) Analyzer(a string) *SearchReq {
-	req.query.Add("analyzer", a)
+	req.Query.Add("analyzer", a)
 
 	return req
 }
@@ -51,7 +51,7 @@ func (req *SearchReq) Body(body *bytes.Buffer) *SearchReq {
 }
 
 func (req *SearchReq) Do() (*SearchResp, error) {
-	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, "_search"), req.query, req.body)
+	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, "_search"), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
