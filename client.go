@@ -54,6 +54,10 @@ func (c *Client) Delete(index string) *DeleteReq {
 	return NewDelete(c, index)
 }
 
+func (c *Client) Index(index string) *IndexReq {
+	return NewIndex(c, index)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
