@@ -50,9 +50,8 @@ func (c *Client) Count() *CountReq {
 	return NewCount(c)
 }
 
-func (c *Client) DeleteIndex(index string, ty string) *DeleteIndexReq {
-
-	return NewDeleteIndex(c, buildPathIndexType(index, ty))
+func (c *Client) Delete() *DeleteReq {
+	return NewDelete(c)
 }
 
 func (c *Client) Debug(debug bool) {
