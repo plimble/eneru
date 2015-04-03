@@ -13,13 +13,13 @@ type DeleteIndexSuite struct {
 	client *Client
 }
 
-func TestDeleteIndexSuite(t *testing.T) {
+func TestDeleteSuite(t *testing.T) {
 	suite.Run(t, &DeleteIndexSuite{})
 }
 
 func (t *DeleteIndexSuite) SetupSuite() {
 	t.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		encodeResp(w, &DeleteIndexResp{
+		encodeResp(w, &DeleteResp{
 			Acknowledged: true,
 		})
 	}))
@@ -37,7 +37,7 @@ func (t *DeleteIndexSuite) TearDownSuite() {
 }
 
 func (t *DeleteIndexSuite) TestDo() {
-	resp, err := t.client.DeleteIndex("test").Do()
+	resp, err := t.client.Delete().Index("test").Type("user").Do()
 
 	t.NoError(err)
 	t.True(resp.Acknowledged)
