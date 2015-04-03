@@ -6,11 +6,13 @@ import (
 )
 
 const (
-	comma  = 0x2c
-	colon  = 0x3a
-	lbrace = 0x7b
-	rbrace = 0x7d
-	quote  = 0x22
+	comma    = 0x2c
+	colon    = 0x3a
+	lbrace   = 0x7b
+	rbrace   = 0x7d
+	quote    = 0x22
+	lbracket = 0x5b
+	rbracket = 0x5d
 )
 
 type ObjectFunc func(j *Json)
@@ -49,6 +51,68 @@ func (j *Json) S(key, val string) {
 	j.more = true
 }
 
+func (j *Json) AI(key string, vals ...int) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	j.buf.WriteByte(lbracket)
+	for i := 0; i < len(vals); i++ {
+		j.buf.WriteString(strconv.Itoa(vals[i]))
+		if i != len(vals)-1 {
+			j.buf.WriteByte(comma)
+		}
+	}
+	j.buf.WriteByte(rbracket)
+	j.more = true
+}
+
+func (j *Json) AS(key string, vals ...string) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	j.buf.WriteByte(lbracket)
+	for i := 0; i < len(vals); i++ {
+		j.buf.WriteByte(quote)
+		j.buf.WriteString(vals[i])
+		j.buf.WriteByte(quote)
+		if i != len(vals)-1 {
+			j.buf.WriteByte(comma)
+		}
+	}
+	j.buf.WriteByte(rbracket)
+	j.more = true
+}
+
+func (j *Json) AF(key string, prec int, vals ...float64) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	j.buf.WriteByte(lbracket)
+	for i := 0; i < len(vals); i++ {
+		j.buf.WriteString(strconv.FormatFloat(vals[i], 'f', prec, 32))
+		if i != len(vals)-1 {
+			j.buf.WriteByte(comma)
+		}
+	}
+	j.buf.WriteByte(rbracket)
+	j.more = true
+}
+
 func (j *Json) I(key string, val int) {
 	if j.more {
 		j.buf.WriteByte(comma)
@@ -59,6 +123,19 @@ func (j *Json) I(key string, val int) {
 	j.buf.WriteByte(quote)
 	j.buf.WriteByte(colon)
 	j.buf.WriteString(strconv.Itoa(val))
+	j.more = true
+}
+
+func (j *Json) F(key string, val float64, prec int) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	j.buf.WriteString(strconv.FormatFloat(val, 'f', prec, 32))
 	j.more = true
 }
 
