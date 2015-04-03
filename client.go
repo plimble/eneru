@@ -58,6 +58,10 @@ func (c *Client) Index(index string) *IndexReq {
 	return NewIndex(c, index)
 }
 
+func (c *Client) Update(index, ty string) *UpdateReq {
+	return NewUpdate(c, index, ty)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
