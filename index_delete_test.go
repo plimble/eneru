@@ -37,7 +37,7 @@ func (t *DeleteIndexSuite) TearDownSuite() {
 }
 
 func (t *DeleteIndexSuite) TestDo() {
-	resp, err := t.client.DeleteIndex("test").Do()
+	resp, err := t.client.DeleteIndex("test", "").Do()
 
 	t.NoError(err)
 	t.True(resp.Acknowledged)
