@@ -31,7 +31,7 @@ func (req *IndexReq) Type(ty string) *IndexReq {
 }
 
 func (req *IndexReq) Do() (*IndexResp, error) {
-	resp, err := req.client.Request(PUT, buildPathIndexType(req.index, req.ty), nil, req.body)
+	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty), nil, req.body)
 	if err != nil {
 		return nil, err
 	}
