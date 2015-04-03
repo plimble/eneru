@@ -48,9 +48,11 @@ func (c *Client) ExistIndex(index string) *ExistIndexReq {
 
 func (c *Client) Count() *CountReq {
 	return NewCount(c)
+}
 
-func (c *Client) DeleteIndex(index string) *DeleteIndexReq {
-	return NewDeleteIndex(c, index)
+func (c *Client) DeleteIndex(index string, ty string) *DeleteIndexReq {
+
+	return NewDeleteIndex(c, buildPathIndexType(index, ty))
 }
 
 func (c *Client) Debug(debug bool) {
