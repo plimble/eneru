@@ -48,6 +48,7 @@ func (c *Client) ExistIndex(index string) *ExistIndexReq {
 
 func (c *Client) Count() *CountReq {
 	return NewCount(c)
+}
 
 func (c *Client) DeleteIndex(index string) *DeleteIndexReq {
 	return NewDeleteIndex(c, index)

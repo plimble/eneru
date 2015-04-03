@@ -34,9 +34,9 @@ func encodeResp(w http.ResponseWriter, v interface{}) {
 
 func buildPathIndexType(index, ty string) string {
 	switch {
-	case index != "" && ty == "" && action == "":
+	case index != "" && ty == "":
 		return string2.Concat(index)
-	case index != "" && ty != "" && action == "":
+	case index != "" && ty != "":
 		return string2.Concat(index, "/", ty)
 	}
 
