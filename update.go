@@ -10,6 +10,7 @@ type UpdateReq struct {
 	index  string
 	ty     string
 	id     string
+	Query  *Query
 }
 
 func NewUpdate(client *Client, index, ty string) *UpdateReq {
@@ -33,7 +34,7 @@ func (req *UpdateReq) Id(id string) *UpdateReq {
 }
 
 func (req *UpdateReq) Do() (*UpdateResp, error) {
-	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty), nil, req.body)
+	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
