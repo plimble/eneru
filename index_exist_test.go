@@ -34,14 +34,6 @@ func (t *ExistIndexSuite) TearDownSuite() {
 	t.server.Close()
 }
 
-func (t *ExistIndexSuite) TestGetURL() {
-	req := t.client.ExistIndex("test")
-	t.Equal("test", req.getURL())
-
-	req = t.client.ExistIndex("test").Type("user")
-	t.Equal("test/user", req.getURL())
-}
-
 func (t *ExistIndexSuite) TestDo() {
 	exist, err := t.client.ExistIndex("test").Do()
 	t.NoError(err)

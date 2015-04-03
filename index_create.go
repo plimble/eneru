@@ -23,12 +23,8 @@ func (req *CreateIndexReq) Body(body *bytes.Buffer) *CreateIndexReq {
 	return req
 }
 
-func (req *CreateIndexReq) getURL() string {
-	return req.path
-}
-
 func (req *CreateIndexReq) Do() (*CreateIndexResp, error) {
-	resp, err := req.client.Request(PUT, req.getURL(), nil, req.body)
+	resp, err := req.client.Request(PUT, req.path, nil, req.body)
 	if err != nil {
 		return nil, err
 	}

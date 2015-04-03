@@ -32,24 +32,28 @@ func encodeResp(w http.ResponseWriter, v interface{}) {
 	json.NewEncoder(w).Encode(v)
 }
 
-func buildPathIndexType(index, ty string) string {
-	switch {
-	case index != "" && ty == "":
-		return string2.Concat(index)
-	case index != "" && ty != "":
-		return string2.Concat(index, "/", ty)
+func buildPath(a ...string) string {
+	if len(a) == 0 {
+		return ""
+	}
+	if len(a) == 1 {
+		return a[0]
+	}
+	n := 0
+	for i := 0; i < len(a); i++ {
+		if a[i] != "" {
+			n += len(a[i]) + 1
+		}
 	}
 
-	return string2.Concat(index, "/", ty)
-}
-
-func buildPathIndexTypeAction(index, ty, action string) string {
-	switch {
-	case index == "" && ty == "" && action != "":
-		return action
-	case index != "" && ty == "" && action != "":
-		return string2.Concat(index, "/", action)
+	b := make([]byte, n)
+	bp := 0
+	for _, s := range a {
+		if s != "" {
+			bp += copy(b[bp:], s)
+			bp += copy(b[bp:], "/")
+		}
 	}
 
-	return string2.Concat(index, "/", ty, "/", action)
+	return string(b)
 }

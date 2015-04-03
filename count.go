@@ -24,12 +24,8 @@ func (req *CountReq) Type(ty string) *CountReq {
 	return req
 }
 
-func (req *CountReq) getURL() string {
-	return buildPathIndexTypeAction(req.index, req.ty, "_count")
-}
-
 func (req *CountReq) Do() (int, error) {
-	resp, err := req.client.Request(GET, req.getURL(), nil, nil)
+	resp, err := req.client.Request(GET, buildPath(req.index, req.ty, "_count"), nil, nil)
 	if err != nil {
 		return 0, err
 	}

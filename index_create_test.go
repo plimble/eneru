@@ -38,11 +38,6 @@ func (t *CreateIndexSuite) TestBody() {
 	t.NotNil(req.body)
 }
 
-func (t *CreateIndexSuite) TestGetURL() {
-	req := t.client.CreateIndex("test")
-	t.Equal("test", req.getURL())
-}
-
 func (t *CreateIndexSuite) TestDo() {
 	j := NewJson(func(j *Json) {
 		j.O("mappings", func(j *Json) {

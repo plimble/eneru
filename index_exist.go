@@ -20,12 +20,8 @@ func (req *ExistIndexReq) Type(ty string) *ExistIndexReq {
 	return req
 }
 
-func (req *ExistIndexReq) getURL() string {
-	return buildPathIndexType(req.path, req.ty)
-}
-
 func (req *ExistIndexReq) Do() (bool, error) {
-	resp, err := req.client.Request(HEAD, req.getURL(), nil, nil)
+	resp, err := req.client.Request(HEAD, buildPath(req.path, req.ty), nil, nil)
 	if err != nil {
 		return false, err
 	}

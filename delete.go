@@ -20,7 +20,7 @@ func (req *DeleteReq) Type(ty string) *DeleteReq {
 }
 
 func (req *DeleteReq) Do() (*DeleteResp, error) {
-	resp, err := req.client.Request(DELETE, buildPathIndexType(req.index, req.ty), nil, nil)
+	resp, err := req.client.Request(DELETE, buildPath(req.index, req.ty), nil, nil)
 	if err != nil {
 		return nil, err
 	}
