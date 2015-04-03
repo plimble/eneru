@@ -62,6 +62,10 @@ func (c *Client) Update(index, ty string) *UpdateReq {
 	return NewUpdate(c, index, ty)
 }
 
+func (c *Client) UpdatePartial(index, ty string) *UpdatePartialReq {
+	return NewUpdatePartial(c, index, ty)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
