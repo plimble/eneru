@@ -1,25 +1,16 @@
 package eneru
 
-import (
-	"fmt"
-)
-
 type DeleteReq struct {
 	client *Client
 	index  string
 	ty     string
 }
 
-func NewDelete(client *Client) *DeleteReq {
+func NewDelete(client *Client, index string) *DeleteReq {
 	return &DeleteReq{
 		client: client,
+		index:  index,
 	}
-}
-
-func (req *DeleteReq) Index(index string) *DeleteReq {
-	req.index = index
-
-	return req
 }
 
 func (req *DeleteReq) Type(ty string) *DeleteReq {
