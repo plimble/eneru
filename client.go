@@ -62,6 +62,10 @@ func (c *Client) Update(index, ty string) *UpdateReq {
 	return NewUpdate(c, index, ty)
 }
 
+func (c *Client) Search() *SearchReq {
+	return NewSearch(c)
+}
+
 func (c *Client) UpdatePartial(index, ty string) *UpdatePartialReq {
 	return NewUpdatePartial(c, index, ty)
 }

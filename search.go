@@ -62,8 +62,8 @@ func (req *SearchReq) Do() (*SearchResp, error) {
 }
 
 type SearchResp struct {
-	TookInMillis int64         `json:"took"`            // search time in milliseconds
-	ScrollId     string        `json:"_scroll_id"`      // only used with Scroll and Scan operations
+	Took         int64         `json:"took"`            // search time in milliseconds
+	ScrollID     string        `json:"_scroll_id"`      // only used with Scroll and Scan operations
 	Hits         *SearchHits   `json:"hits"`            // the actual search hits
 	Suggest      SearchSuggest `json:"suggest"`         // results from suggesters
 	Facets       SearchFacets  `json:"facets"`          // results from facets
@@ -73,9 +73,9 @@ type SearchResp struct {
 }
 
 type SearchHits struct {
-	TotalHits int64        `json:"total"`     // total number of hits found
-	MaxScore  *float64     `json:"max_score"` // maximum score of all hits
-	Hits      []*SearchHit `json:"hits"`      // the actual hits returned
+	Total    int64        `json:"total"`     // total number of hits found
+	MaxScore float64      `json:"max_score"` // maximum score of all hits
+	Hits     []*SearchHit `json:"hits"`      // the actual hits returned
 }
 
 type SearchSuggest map[string][]*SearchSuggestion
@@ -89,7 +89,7 @@ type SearchSuggestion struct {
 
 type SearchSuggestionOption struct {
 	Text    string      `json:"text"`
-	Score   float32     `json:"score"`
+	Score   float64     `json:"score"`
 	Freq    int         `json:"freq"`
 	Payload interface{} `json:"payload"`
 }
@@ -112,16 +112,16 @@ type SearchFacetTerm struct {
 }
 
 type SearchFacetRange struct {
-	From       *float64 `json:"from"`
-	FromStr    *string  `json:"from_str"`
-	To         *float64 `json:"to"`
-	ToStr      *string  `json:"to_str"`
-	Count      int      `json:"count"`
-	Min        *float64 `json:"min"`
-	Max        *float64 `json:"max"`
-	TotalCount int      `json:"total_count"`
-	Total      *float64 `json:"total"`
-	Mean       *float64 `json:"mean"`
+	From       float64 `json:"from"`
+	FromStr    string  `json:"from_str"`
+	To         float64 `json:"to"`
+	ToStr      string  `json:"to_str"`
+	Count      int     `json:"count"`
+	Min        float64 `json:"min"`
+	Max        float64 `json:"max"`
+	TotalCount int     `json:"total_count"`
+	Total      float64 `json:"total"`
+	Mean       float64 `json:"mean"`
 }
 
 type SearchFacetEntry struct {
@@ -152,11 +152,11 @@ type SearchFacetEntry struct {
 type Aggregations map[string]*json.RawMessage
 
 type SearchHit struct {
-	Score       *float64               `json:"_score"`       // computed score
+	Score       float64                `json:"_score"`       // computed score
 	Index       string                 `json:"_index"`       // index name
-	Id          string                 `json:"_id"`          // external or internal
+	ID          string                 `json:"_id"`          // external or internal
 	Type        string                 `json:"_type"`        // type
-	Version     *int64                 `json:"_version"`     // version number, when Version is set to true in SearchService
+	Version     int64                  `json:"_version"`     // version number, when Version is set to true in SearchService
 	Sort        []interface{}          `json:"sort"`         // sort information
 	Highlight   SearchHitHighlight     `json:"highlight"`    // highlighter information
 	Source      *json.RawMessage       `json:"_source"`      // stored document source
