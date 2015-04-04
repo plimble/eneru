@@ -27,7 +27,7 @@ func (req *UpdatePartialReq) Body(body *bytes.Buffer) *UpdatePartialReq {
 	return req
 }
 
-func (req *UpdatePartialReq) Id(id string) *UpdatePartialReq {
+func (req *UpdatePartialReq) ID(id string) *UpdatePartialReq {
 	req.id = id
 
 	return req

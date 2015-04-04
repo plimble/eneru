@@ -9,6 +9,7 @@ type IndexReq struct {
 	body   *bytes.Buffer
 	index  string
 	ty     string
+	id     string
 }
 
 func NewIndex(client *Client, index string) *IndexReq {
@@ -26,6 +27,12 @@ func (req *IndexReq) Body(body *bytes.Buffer) *IndexReq {
 
 func (req *IndexReq) Type(ty string) *IndexReq {
 	req.ty = ty
+
+	return req
+}
+
+func (req *IndexReq) ID(id string) *IndexReq {
+	req.id = id
 
 	return req
 }

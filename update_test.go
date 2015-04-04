@@ -21,8 +21,11 @@ func TestUpdateSuite(t *testing.T) {
 func (t *UpdateSuite) SetupSuite() {
 	t.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		encodeResp(w, &UpdateResp{
-			Created: false,
+			Index:   "test",
+			Type:    "book",
+			ID:      "1",
 			Version: 2,
+			Created: false,
 		})
 	}))
 
@@ -44,8 +47,11 @@ func (t *UpdateSuite) TestDo() {
 		j.AS("tags", "search", "computer")
 	})
 
-	resp, err := t.client.Update("test", "book").Id("1").Body(j).Do()
+	resp, err := t.client.Update("test", "book").ID("1").Body(j).Do()
 	t.NoError(err)
-	t.False(resp.Created)
+	t.Equal(resp.Index, "test")
+	t.Equal(resp.Type, "book")
+	t.Equal(resp.ID, "1")
 	t.NotEqual(resp.Version, 1)
+	t.False(resp.Created)
 }

@@ -27,7 +27,7 @@ func (req *UpdateReq) Body(body *bytes.Buffer) *UpdateReq {
 	return req
 }
 
-func (req *UpdateReq) Id(id string) *UpdateReq {
+func (req *UpdateReq) ID(id string) *UpdateReq {
 	req.id = id
 
 	return req
