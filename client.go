@@ -105,7 +105,7 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 	}
 
 	if err := c.checkResponse(resp); err != nil {
-		return nil, err
+		return resp, err
 	}
 
 	return resp, err
@@ -157,9 +157,9 @@ func (c *Client) dumpResponse(resp *http.Response) {
 }
 
 func (c *Client) checkResponse(resp *http.Response) error {
-	if resp.StatusCode == 200 {
-		return nil
+	if resp.StatusCode == 500 {
+		return newErrResp(resp.Body)
 	}
 
-	return newErrResp(resp.Body)
+	return nil
 }

@@ -73,7 +73,7 @@ type SearchResp struct {
 }
 
 type SearchHits struct {
-	Total    int64        `json:"total"`     // total number of hits found
+	Total    int          `json:"total"`     // total number of hits found
 	MaxScore float64      `json:"max_score"` // maximum score of all hits
 	Hits     []*SearchHit `json:"hits"`      // the actual hits returned
 }
@@ -162,7 +162,6 @@ type SearchHit struct {
 	Source      *json.RawMessage       `json:"_source"`      // stored document source
 	Fields      map[string]interface{} `json:"fields"`       // returned fields
 	Explanation *SearchExplanation     `json:"_explanation"` // explains how the score was computed
-
 }
 
 type SearchHitHighlight map[string][]string

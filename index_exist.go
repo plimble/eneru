@@ -1,7 +1,5 @@
 package eneru
 
-import ()
-
 type ExistIndexReq struct {
 	client *Client
 	path   string
@@ -22,12 +20,12 @@ func (req *ExistIndexReq) Type(ty string) *ExistIndexReq {
 
 func (req *ExistIndexReq) Do() (bool, error) {
 	resp, err := req.client.Request(HEAD, buildPath(req.path, req.ty), nil, nil)
-	if err != nil {
-		return false, err
-	}
-
 	if resp.StatusCode != 200 {
 		return false, nil
+	}
+
+	if err != nil {
+		return false, err
 	}
 
 	return true, nil

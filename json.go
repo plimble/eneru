@@ -71,6 +71,24 @@ func (j *Json) AI(key string, vals ...int) {
 	j.more = true
 }
 
+func (j *Json) B(key string, val bool) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	if val {
+		j.buf.WriteString("true")
+	} else {
+		j.buf.WriteString("false")
+	}
+	j.more = true
+
+}
+
 func (j *Json) AS(key string, vals ...string) {
 	if j.more {
 		j.buf.WriteByte(comma)
@@ -111,6 +129,30 @@ func (j *Json) AF(key string, prec int, vals ...float64) {
 	}
 	j.buf.WriteByte(rbracket)
 	j.more = true
+}
+
+func (j *Json) AO(key string, fns ...ObjectFunc) {
+	if j.more {
+		j.buf.WriteByte(comma)
+	}
+	j.more = false
+	j.buf.WriteByte(quote)
+	j.buf.WriteString(key)
+	j.buf.WriteByte(quote)
+	j.buf.WriteByte(colon)
+	j.buf.WriteByte(lbracket)
+
+	for i := 0; i < len(fns); i++ {
+		if j.more {
+			j.buf.WriteByte(comma)
+		}
+		j.more = false
+		j.buf.WriteByte(lbrace)
+		fns[i](j)
+		j.buf.WriteByte(rbrace)
+	}
+
+	j.buf.WriteByte(rbracket)
 }
 
 func (j *Json) I(key string, val int) {

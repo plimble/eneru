@@ -23,6 +23,7 @@ func (t *JsonSuite) TestJson() {
 						j.S("type", "string")
 						j.I("int", 10000)
 						j.AI("ai", 10, 20, 30, 40)
+						j.B("bool", true)
 						j.AS("as", "10", "20", "30", "40")
 						j.AF("af", 2, 10.12, 20.321, 30.553, 40.22222222)
 					})
@@ -31,12 +32,21 @@ func (t *JsonSuite) TestJson() {
 						j.S("type", "string")
 						j.S("index", "not_analyzed")
 					})
+					j.AO("AO", func(j *Json) {
+						j.O("email", func(j *Json) {
+							j.S("order", "asc")
+						})
+					}, func(j *Json) {
+						j.O("name", func(j *Json) {
+							j.S("order", "desc")
+						})
+					})
 				})
 			})
 		})
 	})
 
-	expJson := "{\"mappings\":{\"book\":{\"properties\":{\"name\":{\"type\":\"string\",\"int\":10000,\"ai\":[10,20,30,40],\"as\":[\"10\",\"20\",\"30\",\"40\"],\"af\":[10.12,20.32,30.55,40.22]},\"email\":{\"float\":10.123,\"type\":\"string\",\"index\":\"not_analyzed\"}}}}}"
+	expJson := "{\"mappings\":{\"book\":{\"properties\":{\"name\":{\"type\":\"string\",\"int\":10000,\"ai\":[10,20,30,40],\"bool\":true,\"as\":[\"10\",\"20\",\"30\",\"40\"],\"af\":[10.12,20.32,30.55,40.22]},\"email\":{\"float\":10.123,\"type\":\"string\",\"index\":\"not_analyzed\"},\"AO\":[{\"email\":{\"order\":\"asc\"}},{\"name\":{\"order\":\"desc\"}}]}}}}"
 
 	t.Equal(expJson, j.String())
 }

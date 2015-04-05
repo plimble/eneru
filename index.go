@@ -2,6 +2,7 @@ package eneru
 
 import (
 	"bytes"
+	"encoding/json"
 )
 
 type IndexReq struct {
@@ -25,6 +26,13 @@ func (req *IndexReq) Body(body *bytes.Buffer) *IndexReq {
 	return req
 }
 
+func (req *IndexReq) BodyJson(v interface{}) *IndexReq {
+	req.body = bytes.NewBuffer(nil)
+	json.NewEncoder(req.body).Encode(v)
+
+	return req
+}
+
 func (req *IndexReq) Type(ty string) *IndexReq {
 	req.ty = ty
 
@@ -38,7 +46,7 @@ func (req *IndexReq) ID(id string) *IndexReq {
 }
 
 func (req *IndexReq) Do() (*IndexResp, error) {
-	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty), nil, req.body)
+	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty, req.id), nil, req.body)
 	if err != nil {
 		return nil, err
 	}
