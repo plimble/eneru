@@ -104,6 +104,10 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 		c.dumpResponse(resp)
 	}
 
+	if body != nil {
+		bufPool.Put(body)
+	}
+
 	if err := c.checkResponse(resp); err != nil {
 		return resp, err
 	}

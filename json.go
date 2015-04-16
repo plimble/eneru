@@ -2,6 +2,8 @@ package eneru
 
 import (
 	"bytes"
+	"fmt"
+	"math"
 	"strconv"
 )
 
@@ -13,19 +15,78 @@ const (
 	quote    = 0x22
 	lbracket = 0x5b
 	rbracket = 0x5d
+	minus    = 0x2d
 )
 
 type ObjectFunc func(j *Json)
 
 type Json struct {
-	buf    *bytes.Buffer
-	more   bool
-	offset int
+	buf  *bytes.Buffer
+	more bool
 }
+
+func (j *Json) getNumberByte(a int) byte {
+	switch a {
+	case 0:
+		return 0x30
+	case 1:
+		return 0x31
+	case 2:
+		return 0x32
+	case 3:
+		return 0x33
+	case 4:
+		return 0x34
+	case 5:
+		return 0x35
+	case 6:
+		return 0x36
+	case 7:
+		return 0x37
+	case 8:
+		return 0x38
+	case 9:
+		return 0x39
+	}
+
+	return 0x00
+}
+
+func (j *Json) getInt(val int) {
+	if val < 0 {
+		j.buf.WriteByte(minus)
+		val *= -1
+	}
+
+	digit := 0
+	a := val
+	for {
+		a = a / 10
+		if a == 0 {
+			break
+		}
+		digit++
+	}
+
+	for i := digit; i >= 0; i-- {
+		pow := int(math.Pow10(i))
+		j.buf.WriteByte(j.getNumberByte(val / pow))
+		val = val % pow
+	}
+}
+
+// func (j *Json) GetFloat(val float64) {
+// 	fmt.Println("val", val)
+// 	l := int(val)
+// 	fmt.Println("left", l)
+// 	r := val - 0.2
+
+// 	fmt.Println("right", r)
+// }
 
 func NewJson(fn ObjectFunc) *bytes.Buffer {
 	j := &Json{
-		buf:  &bytes.Buffer{},
+		buf:  bufPool.Get(),
 		more: false,
 	}
 
@@ -62,7 +123,7 @@ func (j *Json) AI(key string, vals ...int) {
 	j.buf.WriteByte(colon)
 	j.buf.WriteByte(lbracket)
 	for i := 0; i < len(vals); i++ {
-		j.buf.WriteString(strconv.Itoa(vals[i]))
+		j.getInt(vals[i])
 		if i != len(vals)-1 {
 			j.buf.WriteByte(comma)
 		}
@@ -164,7 +225,7 @@ func (j *Json) I(key string, val int) {
 	j.buf.WriteString(key)
 	j.buf.WriteByte(quote)
 	j.buf.WriteByte(colon)
-	j.buf.WriteString(strconv.Itoa(val))
+	j.getInt(val)
 	j.more = true
 }
 
