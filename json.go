@@ -2,7 +2,6 @@ package eneru
 
 import (
 	"bytes"
-	"fmt"
 	"math"
 	"strconv"
 )
