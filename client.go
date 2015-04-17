@@ -79,7 +79,7 @@ func (c *Client) Pretty(pretty bool) {
 }
 
 func (c *Client) ping() error {
-	resp, err := c.Request(HEAD, "/", nil, nil)
+	resp, err := c.Request(GET, "", nil, nil)
 	if err != nil {
 		return err
 	}
