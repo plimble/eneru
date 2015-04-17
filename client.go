@@ -100,6 +100,10 @@ func (c *Client) Request(method, path string, query *Query, body *bytes.Buffer) 
 	}
 
 	resp, err := c.httpClient.Do(r)
+	if err != nil {
+		return nil, err
+	}
+
 	if c.debug {
 		c.dumpResponse(resp)
 	}
