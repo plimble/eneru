@@ -22,7 +22,7 @@ func (t *ExistIndexSuite) SetupSuite() {
 
 	}))
 
-	client, err := NewClient(t.server.URL)
+	client, err := NewClient(t.server.URL, 512)
 	if err != nil {
 		panic(err)
 	}

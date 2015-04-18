@@ -3,6 +3,7 @@ package eneru
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/plimble/utils/pool"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -18,6 +19,8 @@ const (
 	HEAD   = "HEAD"
 )
 
+var bufPool *pool.BufferPool
+
 type Client struct {
 	url        string
 	debug      bool
@@ -25,7 +28,7 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func NewClient(url string) (*Client, error) {
+func NewClient(url string, poolSize int) (*Client, error) {
 	c := &Client{
 		url:        addTailingSlash(url),
 		httpClient: http.DefaultClient,
@@ -34,6 +37,11 @@ func NewClient(url string) (*Client, error) {
 	if err := c.ping(); err != nil {
 		return nil, err
 	}
+
+	if poolSize == 0 {
+		poolSize = 512
+	}
+	bufPool = pool.NewBufferPool(poolSize)
 
 	return c, nil
 }

@@ -76,7 +76,7 @@ func (t *SearchSuite) SetupSuite() {
 		`))
 	}))
 
-	t.client, _ = NewClient(t.server.URL)
+	t.client, _ = NewClient(t.server.URL, 512)
 }
 
 func (t *SearchSuite) TearDownSuite() {
