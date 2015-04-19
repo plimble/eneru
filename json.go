@@ -83,6 +83,13 @@ func (j *Json) getInt(val int) {
 // 	fmt.Println("right", r)
 // }
 
+func NewJsonString(s string) *bytes.Buffer {
+	buf := bufPool.Get()
+	buf.WriteString(s)
+
+	return buf
+}
+
 func NewJson(fn ObjectFunc) *bytes.Buffer {
 	j := &Json{
 		buf:  bufPool.Get(),
