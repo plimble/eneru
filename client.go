@@ -185,7 +185,7 @@ func (c *Client) dumpResponse(resp *http.Response) {
 }
 
 func (c *Client) checkResponse(resp *http.Response) error {
-	if resp.StatusCode == 500 {
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return newErrResp(resp.Body)
 	}
 
