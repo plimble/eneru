@@ -78,6 +78,18 @@ func (c *Client) UpdatePartial(index, ty string) *UpdatePartialReq {
 	return NewUpdatePartial(c, index, ty)
 }
 
+func (c *Client) CreateMapping(index, ty string) *CreateMappingReq {
+	return NewCreateMapping(c, index, ty)
+}
+
+func (c *Client) GetMapping(index, ty string) *GetMappingReq {
+	return NewGetMapping(c, index, ty)
+}
+
+func (c *Client) DeleteMapping(index, ty string) *DeleteMappingReq {
+	return NewDeleteMapping(c, index, ty)
+}
+
 func (c *Client) Debug(debug bool) {
 	c.debug = debug
 }
