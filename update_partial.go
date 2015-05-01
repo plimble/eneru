@@ -18,6 +18,7 @@ func NewUpdatePartial(client *Client, index, ty, id string) *UpdatePartialReq {
 		client: client,
 		index:  index,
 		ty:     ty,
+		id:     id,
 	}
 }
 
