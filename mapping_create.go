@@ -26,7 +26,7 @@ func (req *CreateMappingReq) Body(body *bytes.Buffer) *CreateMappingReq {
 }
 
 func (req *CreateMappingReq) Do() (*CreateMappingResp, error) {
-	resp, err := req.client.Request(PUT, buildPath(req.index, "_mapping", req.ty), nil, req.body)
+	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty, "_mapping"), nil, req.body)
 	if err != nil {
 		return nil, err
 	}

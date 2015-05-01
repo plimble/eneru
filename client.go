@@ -74,8 +74,8 @@ func (c *Client) Search() *SearchReq {
 	return NewSearch(c)
 }
 
-func (c *Client) UpdatePartial(index, ty string) *UpdatePartialReq {
-	return NewUpdatePartial(c, index, ty)
+func (c *Client) UpdatePartial(index, ty, id string) *UpdatePartialReq {
+	return NewUpdatePartial(c, index, ty, id)
 }
 
 func (c *Client) CreateMapping(index, ty string) *CreateMappingReq {

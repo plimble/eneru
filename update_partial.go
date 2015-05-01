@@ -13,7 +13,7 @@ type UpdatePartialReq struct {
 	Query  *Query
 }
 
-func NewUpdatePartial(client *Client, index, ty string) *UpdatePartialReq {
+func NewUpdatePartial(client *Client, index, ty, id string) *UpdatePartialReq {
 	return &UpdatePartialReq{
 		client: client,
 		index:  index,
@@ -27,14 +27,8 @@ func (req *UpdatePartialReq) Body(body *bytes.Buffer) *UpdatePartialReq {
 	return req
 }
 
-func (req *UpdatePartialReq) ID(id string) *UpdatePartialReq {
-	req.id = id
-
-	return req
-}
-
 func (req *UpdatePartialReq) Do() (*UpdatePartialResp, error) {
-	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, "_update"), req.Query, req.body)
+	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, req.id, "_update"), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
