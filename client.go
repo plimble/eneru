@@ -3,10 +3,11 @@ package eneru
 import (
 	"bytes"
 	"encoding/json"
+	log "github.com/Sirupsen/logrus"
 	"github.com/plimble/utils/pool"
-	"log"
 	"net/http"
 	"net/http/httputil"
+	"time"
 )
 
 //go:generate mockery --name Client
@@ -34,8 +35,17 @@ func NewClient(url string, poolSize int) (*Client, error) {
 		httpClient: http.DefaultClient,
 	}
 
-	if err := c.ping(); err != nil {
-		return nil, err
+	var err error
+	for i := 0; i < 5; i++ {
+		log.Info("Try to connect elasticsearch...")
+		if err = c.ping(); err != nil {
+			log.Warnf("Try #%d: %s", i, err.Error())
+		} else {
+			log.Info("Elasticsearch Connected")
+			break
+		}
+
+		time.Sleep(time.Second * 2)
 	}
 
 	if poolSize == 0 {
