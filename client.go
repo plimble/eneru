@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	log "github.com/Sirupsen/logrus"
+	"github.com/plimble/tsplitter"
 	"github.com/plimble/utils/pool"
 	"net/http"
 	"net/http/httputil"
@@ -27,12 +28,15 @@ type Client struct {
 	debug      bool
 	pretty     bool
 	httpClient *http.Client
+	tsplitter  bool
+	dict       *tsplitter.FileDict
 }
 
 func NewClient(url string, poolSize int) (*Client, error) {
 	c := &Client{
 		url:        addTailingSlash(url),
 		httpClient: http.DefaultClient,
+		tsplitter:  false,
 	}
 
 	var err error
@@ -54,6 +58,11 @@ func NewClient(url string, poolSize int) (*Client, error) {
 	bufPool = pool.NewBufferPool(poolSize)
 
 	return c, nil
+}
+
+func (c *Client) tsplitterEnable(dictPath string) {
+	c.tsplitter = true
+	c.dict = tsplitter.NewFileDict(dictPath)
 }
 
 func (c *Client) CreateIndex(index string) *CreateIndexReq {
