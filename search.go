@@ -51,12 +51,21 @@ func (req *SearchReq) Body(body *bytes.Buffer) *SearchReq {
 }
 
 func (req *SearchReq) Do() (*SearchResp, error) {
+	var err error
+	ret := &SearchResp{}
+
+	if req.client.tsplitter {
+		req.body, err = splitString(req.client.dict, req.body)
+		if err != nil {
+			return ret, err
+		}
+	}
+
 	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, "_search"), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
 
-	ret := &SearchResp{}
 	err = decodeResp(resp, ret)
 	return ret, err
 }

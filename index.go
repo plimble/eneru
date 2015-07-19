@@ -46,12 +46,21 @@ func (req *IndexReq) ID(id string) *IndexReq {
 }
 
 func (req *IndexReq) Do() (*IndexResp, error) {
+	var err error
+	ret := &IndexResp{}
+
+	if req.client.tsplitter {
+		req.body, err = splitString(req.client.dict, req.body)
+		if err != nil {
+			return ret, err
+		}
+	}
+
 	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty, req.id), nil, req.body)
 	if err != nil {
 		return nil, err
 	}
 
-	ret := &IndexResp{}
 	err = decodeResp(resp, ret)
 	return ret, err
 }
