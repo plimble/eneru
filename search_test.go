@@ -95,10 +95,10 @@ func (t *SearchSuite) TestDo() {
 
 	resp, err := t.client.Search().Index("test").Type("user").Body(j).Do()
 	t.NoError(err)
-	t.Equal(resp.Took, 20)
+	t.Equal(int(resp.Took), 20)
 	t.Equal(resp.TimedOut, false)
 	t.Equal(resp.Hits.Total, 2)
-	t.Equal(resp.Hits.MaxScore, 1)
+	t.Equal(int(resp.Hits.MaxScore), 1)
 	t.Len(resp.Hits.Hits, 2)
 	t.Equal(resp.Hits.Hits[0].ID, "1")
 	t.Equal(resp.Hits.Hits[1].ID, "2")
