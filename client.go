@@ -61,9 +61,9 @@ func NewClient(url string, poolSize int) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) tsplitterEnable(dictPath string) {
+func (c *Client) tsplitterEnable(dict tsplitter.Dictionary) {
 	c.tsplitter = true
-	c.dict = tsplitter.NewFileDict(dictPath)
+	c.dict = dict
 }
 
 func (c *Client) CreateIndex(index string) *CreateIndexReq {

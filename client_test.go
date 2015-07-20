@@ -3,6 +3,7 @@ package eneru
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/plimble/tsplitter"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +25,7 @@ func (t *ClientSuite) SetupSuite() {
 	}))
 
 	t.client, _ = NewClient(t.server.URL, 512)
-	t.client.tsplitterEnable("./dictionary.txt")
+	t.client.tsplitterEnable(tsplitter.NewFileDict("./dictionary.txt"))
 }
 
 func (t *ClientSuite) TestSplitString() {
