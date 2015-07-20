@@ -1,20 +1,12 @@
 package eneru
 
 import (
-	"bytes"
-	"encoding/json"
-	"github.com/plimble/tsplitter"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
 type UtilsSuite struct {
 	suite.Suite
-	dict *tsplitter.FileDict
-}
-
-func (t *UtilsSuite) SetupTest() {
-	t.dict = tsplitter.NewFileDict("./dictionary.txt")
 }
 
 func TestUtilsSuite(t *testing.T) {
@@ -27,54 +19,4 @@ func (t *UtilsSuite) TestBuildPath() {
 
 	path = buildPath("index", "", "id", "_action")
 	t.Equal("index/id/_action/", path)
-}
-
-func (t *UtilsSuite) TestSplitString() {
-	sampleArrayInt := []int{
-		45,
-		2124,
-	}
-
-	sampleJson := map[string]interface{}{
-		"Name":   "พลังงานไฟฟ้า",
-		"Detail": "พลังงานเกิดจากแสงอาทิตย์",
-		"ISBN":   12321342,
-		"Tags": []string{
-			"ชีวจิตสุขภาพ",
-			"การเมืองที่ทำงาน",
-			"งานบ้านออฟฟิตคอนโด",
-		},
-		"Codes": sampleArrayInt,
-	}
-
-	bj, err := json.Marshal(sampleJson)
-	t.NoError(err)
-
-	b, err := splitString(t.dict, bytes.NewBuffer(bj))
-	t.NoError(err)
-
-	var data map[string]interface{}
-	err = json.Unmarshal(b.Bytes(), &data)
-	t.NoError(err)
-
-	t.Equal("พลังงานไฟฟ้า", data["Name"])
-	t.Equal("พลังงาน เกิด จาก แสงอาทิตย์", data["Detail"])
-
-	dataInt := int(data["ISBN"].(float64))
-	t.Equal(12321342, dataInt)
-
-	setInt, _ := data["Codes"].([]int)
-	for i, n := range setInt {
-		t.Equal(sampleArrayInt[i], n)
-	}
-
-	resultString := []string{
-		"ชีวจิต สุขภาพ",
-		"การเมือง ที่ทำงาน",
-		"งานบ้าน ออฟฟิต คอนโด",
-	}
-	setString, _ := data["Tags"].([]interface{})
-	for i, n := range setString {
-		t.Equal(resultString[i], n)
-	}
 }

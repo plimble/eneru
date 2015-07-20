@@ -50,7 +50,7 @@ func (req *IndexReq) Do() (*IndexResp, error) {
 	ret := &IndexResp{}
 
 	if req.client.tsplitter {
-		req.body, err = splitString(req.client.dict, req.body)
+		req.body, err = req.client.splitString(req.body)
 		if err != nil {
 			return ret, err
 		}
