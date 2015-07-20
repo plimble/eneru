@@ -29,12 +29,21 @@ func (req *UpdatePartialReq) Body(body *bytes.Buffer) *UpdatePartialReq {
 }
 
 func (req *UpdatePartialReq) Do() (*UpdatePartialResp, error) {
+	var err error
+	ret := &UpdatePartialResp{}
+
+	if req.client.tsplitter {
+		req.body, err = req.client.splitString(req.body)
+		if err != nil {
+			return ret, err
+		}
+	}
+
 	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, req.id, "_update"), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
 
-	ret := &UpdatePartialResp{}
 	err = decodeResp(resp, ret)
 	return ret, err
 }
