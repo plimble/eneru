@@ -45,27 +45,26 @@ func (req *SearchReq) Analyzer(a string) *SearchReq {
 }
 
 func (req *SearchReq) Body(body *bytes.Buffer) *SearchReq {
+	var err error
 	req.body = body
+
+	if req.client.tsplitter {
+		req.body, err = req.client.splitString(body)
+		if err != nil {
+			req.body = body
+		}
+	}
 
 	return req
 }
 
 func (req *SearchReq) Do() (*SearchResp, error) {
-	var err error
-	ret := &SearchResp{}
-
-	if req.client.tsplitter {
-		req.body, err = req.client.splitString(req.body)
-		if err != nil {
-			return ret, err
-		}
-	}
-
 	resp, err := req.client.Request(POST, buildPath(req.index, req.ty, "_search"), req.Query, req.body)
 	if err != nil {
 		return nil, err
 	}
 
+	ret := &SearchResp{}
 	err = decodeResp(resp, ret)
 	return ret, err
 }

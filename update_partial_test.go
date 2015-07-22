@@ -2,6 +2,7 @@ package eneru
 
 import (
 	"bytes"
+	"github.com/plimble/tsplitter"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -39,6 +40,14 @@ func (t *UpdatePartialSuite) TestBody() {
 	req := t.client.UpdatePartial("test", "book", "1")
 	req.Body(bytes.NewBuffer(nil))
 	t.NotNil(req.body)
+}
+
+func (t *UpdatePartialSuite) TestBodyTsplitter() {
+	t.client.tsplitterEnable(tsplitter.NewFileDict("./dictionary.txt"))
+	req := t.client.UpdatePartial("test", "book", "1")
+	req.Body(generateSampleData())
+	t.NotNil(req.body)
+	t.NoError(checkSampleData(req.body))
 }
 
 func (t *UpdatePartialSuite) TestDo() {

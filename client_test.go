@@ -3,6 +3,8 @@ package eneru
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/plimble/tsplitter"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -28,13 +30,12 @@ func (t *ClientSuite) SetupSuite() {
 	t.client.tsplitterEnable(tsplitter.NewFileDict("./dictionary.txt"))
 }
 
-func (t *ClientSuite) TestSplitString() {
-	sampleArrayInt := []int{
-		45,
-		2124,
-	}
+func getError(typeErr string) error {
+	return errors.New(fmt.Sprintf("Failed %s not match", typeErr))
+}
 
-	sampleJson := map[string]interface{}{
+func generateSampleData() *bytes.Buffer {
+	data := map[string]interface{}{
 		"Name":   "พลังงานไฟฟ้า",
 		"Detail": "พลังงานเกิดจากแสงอาทิตย์",
 		"ISBN":   12321342,
@@ -43,28 +44,45 @@ func (t *ClientSuite) TestSplitString() {
 			"การเมืองที่ทำงาน",
 			"งานบ้านออฟฟิตคอนโด",
 		},
-		"Codes": sampleArrayInt,
+		"Codes": []int{
+			45,
+			2124,
+		},
 	}
 
-	bj, err := json.Marshal(sampleJson)
-	t.NoError(err)
+	bj, _ := json.Marshal(data)
+	return bytes.NewBuffer(bj)
+}
 
-	b, err := t.client.splitString(bytes.NewBuffer(bj))
-	t.NoError(err)
+func checkSampleData(bj *bytes.Buffer) error {
+	sampleArrayInt := []int{
+		45,
+		2124,
+	}
 
 	var data map[string]interface{}
-	err = json.Unmarshal(b.Bytes(), &data)
-	t.NoError(err)
+	err := json.Unmarshal(bj.Bytes(), &data)
+	if err != nil {
+		return getError("map json")
+	}
 
-	t.Equal("พลังงานไฟฟ้า", data["Name"])
-	t.Equal("พลังงาน เกิด จาก แสงอาทิตย์", data["Detail"])
+	if "พลังงานไฟฟ้า" != data["Name"] {
+		return getError("string")
+	}
+	if "พลังงาน เกิด จาก แสงอาทิตย์" != data["Detail"] {
+		return getError("text")
+	}
 
 	dataInt := int(data["ISBN"].(float64))
-	t.Equal(12321342, dataInt)
+	if 12321342 != dataInt {
+		return getError("int")
+	}
 
 	setInt, _ := data["Codes"].([]int)
 	for i, n := range setInt {
-		t.Equal(sampleArrayInt[i], n)
+		if sampleArrayInt[i] != n {
+			return getError("array int")
+		}
 	}
 
 	resultString := []string{
@@ -74,6 +92,16 @@ func (t *ClientSuite) TestSplitString() {
 	}
 	setString, _ := data["Tags"].([]interface{})
 	for i, n := range setString {
-		t.Equal(resultString[i], n)
+		if resultString[i] != n {
+			return getError("array string")
+		}
 	}
+
+	return nil
+}
+
+func (t *ClientSuite) TestSplitString() {
+	b, err := t.client.splitString(generateSampleData())
+	t.NoError(err)
+	t.NoError(checkSampleData(b))
 }

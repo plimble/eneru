@@ -21,7 +21,15 @@ func NewIndex(client *Client, index string) *IndexReq {
 }
 
 func (req *IndexReq) Body(body *bytes.Buffer) *IndexReq {
+	var err error
 	req.body = body
+
+	if req.client.tsplitter {
+		req.body, err = req.client.splitString(body)
+		if err != nil {
+			req.body = body
+		}
+	}
 
 	return req
 }
@@ -46,21 +54,12 @@ func (req *IndexReq) ID(id string) *IndexReq {
 }
 
 func (req *IndexReq) Do() (*IndexResp, error) {
-	var err error
-	ret := &IndexResp{}
-
-	if req.client.tsplitter {
-		req.body, err = req.client.splitString(req.body)
-		if err != nil {
-			return ret, err
-		}
-	}
-
 	resp, err := req.client.Request(PUT, buildPath(req.index, req.ty, req.id), nil, req.body)
 	if err != nil {
 		return nil, err
 	}
 
+	ret := &IndexResp{}
 	err = decodeResp(resp, ret)
 	return ret, err
 }
