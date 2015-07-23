@@ -2,6 +2,7 @@ package eneru
 
 import (
 	"bytes"
+	"github.com/plimble/tsplitter"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -89,16 +90,24 @@ func (t *SearchSuite) TestBody() {
 	t.NotNil(req.body)
 }
 
+func (t *SearchSuite) TestBodyTsplitter() {
+	t.client.tsplitterEnable(tsplitter.NewFileDict("./dictionary.txt"))
+	req := t.client.Search()
+	req.Body(generateSampleData())
+	t.NotNil(req.body)
+	t.NoError(checkSampleData(req.body))
+}
+
 func (t *SearchSuite) TestDo() {
 	j := NewJson(func(j *Json) {
 	})
 
 	resp, err := t.client.Search().Index("test").Type("user").Body(j).Do()
 	t.NoError(err)
-	t.Equal(resp.Took, 20)
+	t.Equal(int(resp.Took), 20)
 	t.Equal(resp.TimedOut, false)
 	t.Equal(resp.Hits.Total, 2)
-	t.Equal(resp.Hits.MaxScore, 1)
+	t.Equal(int(resp.Hits.MaxScore), 1)
 	t.Len(resp.Hits.Hits, 2)
 	t.Equal(resp.Hits.Hits[0].ID, "1")
 	t.Equal(resp.Hits.Hits[1].ID, "2")

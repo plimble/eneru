@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	log "github.com/Sirupsen/logrus"
+	"github.com/plimble/tsplitter"
 	"github.com/plimble/utils/pool"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 	"time"
 )
 
@@ -27,12 +29,15 @@ type Client struct {
 	debug      bool
 	pretty     bool
 	httpClient *http.Client
+	tsplitter  bool
+	dict       tsplitter.Dictionary
 }
 
 func NewClient(url string, poolSize int) (*Client, error) {
 	c := &Client{
 		url:        addTailingSlash(url),
 		httpClient: http.DefaultClient,
+		tsplitter:  false,
 	}
 
 	var err error
@@ -54,6 +59,11 @@ func NewClient(url string, poolSize int) (*Client, error) {
 	bufPool = pool.NewBufferPool(poolSize)
 
 	return c, nil
+}
+
+func (c *Client) tsplitterEnable(dict tsplitter.Dictionary) {
+	c.tsplitter = true
+	c.dict = dict
 }
 
 func (c *Client) CreateIndex(index string) *CreateIndexReq {
@@ -200,4 +210,29 @@ func (c *Client) checkResponse(resp *http.Response) error {
 	}
 
 	return nil
+}
+
+func (c *Client) splitString(data *bytes.Buffer) (*bytes.Buffer, error) {
+	var mapJson map[string]interface{}
+	err := json.Unmarshal(data.Bytes(), &mapJson)
+	if err != nil {
+		return nil, err
+	}
+
+	for index, value := range mapJson {
+		switch v := value.(type) {
+		case string:
+			mapJson[index] = strings.Join(tsplitter.Split(c.dict, value.(string)).All(), " ")
+		case []interface{}:
+			for i, n := range value.([]interface{}) {
+				str, ok := n.(string)
+				if !ok {
+					break
+				}
+				v[i] = strings.Join(tsplitter.Split(c.dict, str).All(), " ")
+			}
+		}
+	}
+	splitData, err := json.Marshal(mapJson)
+	return bytes.NewBuffer(splitData), err
 }

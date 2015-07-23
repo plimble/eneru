@@ -45,7 +45,15 @@ func (req *SearchReq) Analyzer(a string) *SearchReq {
 }
 
 func (req *SearchReq) Body(body *bytes.Buffer) *SearchReq {
+	var err error
 	req.body = body
+
+	if req.client.tsplitter {
+		req.body, err = req.client.splitString(body)
+		if err != nil {
+			req.body = body
+		}
+	}
 
 	return req
 }

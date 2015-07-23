@@ -23,7 +23,15 @@ func NewUpdatePartial(client *Client, index, ty, id string) *UpdatePartialReq {
 }
 
 func (req *UpdatePartialReq) Body(body *bytes.Buffer) *UpdatePartialReq {
+	var err error
 	req.body = body
+
+	if req.client.tsplitter {
+		req.body, err = req.client.splitString(body)
+		if err != nil {
+			req.body = body
+		}
+	}
 
 	return req
 }
